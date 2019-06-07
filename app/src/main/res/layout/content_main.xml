@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/app_bar_main">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:elevation="@dimen/activity_horizontal_margin">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#00BEBCBC"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/main_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!--<ImageButton-->
+    <!--android:id="@+id/member_button"-->
+    <!--android:layout_width="100dp"-->
+    <!--android:layout_height="100dp"-->
+    <!--android:layout_marginStart="96dp"-->
+    <!--android:layout_marginLeft="96dp"-->
+    <!--android:layout_marginTop="96dp"-->
+    <!--android:layout_marginEnd="32dp"-->
+    <!--android:layout_marginRight="32dp"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/devotional_button"-->
+    <!--app:layout_constraintStart_toStartOf="parent"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/editText"-->
+    <!--tools:srcCompat="@tools:sample/avatars[0]" />-->
+
+    <!--<ImageButton-->
+    <!--android:id="@+id/devotional_button"-->
+    <!--android:layout_width="100dp"-->
+    <!--android:layout_height="100dp"-->
+    <!--android:layout_marginStart="32dp"-->
+    <!--android:layout_marginLeft="32dp"-->
+    <!--android:layout_marginEnd="96dp"-->
+    <!--android:layout_marginRight="96dp"-->
+    <!--app:layout_constraintBottom_toBottomOf="@+id/member_button"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"-->
+    <!--app:layout_constraintStart_toEndOf="@+id/member_button"-->
+    <!--app:layout_constraintTop_toTopOf="@+id/member_button"-->
+    <!--app:layout_constraintVertical_bias="0.0"-->
+    <!--tools:srcCompat="@tools:sample/avatars[0]" />-->
+
+    <!--<ImageButton-->
+    <!--android:id="@+id/finance_button"-->
+    <!--android:layout_width="100dp"-->
+    <!--android:layout_height="100dp"-->
+    <!--android:layout_marginTop="68dp"-->
+    <!--app:layout_constraintStart_toStartOf="@+id/member_button"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/member_button"-->
+    <!--tools:srcCompat="@tools:sample/avatars[0]" />-->
+
+    <!--<ImageButton-->
+    <!--android:id="@+id/finance_button2"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="0dp"-->
+    <!--app:layout_constraintBottom_toBottomOf="@+id/finance_button"-->
+    <!--app:layout_constraintEnd_toEndOf="@+id/devotional_button"-->
+    <!--app:layout_constraintHorizontal_bias="1.0"-->
+    <!--app:layout_constraintStart_toStartOf="@+id/devotional_button"-->
+    <!--app:layout_constraintTop_toTopOf="@+id/finance_button"-->
+    <!--tools:srcCompat="@tools:sample/avatars[0]" />-->
+
+    <!--<EditText-->
+    <!--android:id="@+id/editText"-->
+    <!--android:layout_width="295dp"-->
+    <!--android:layout_height="71dp"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:layout_marginLeft="8dp"-->
+    <!--android:layout_marginTop="8dp"-->
+    <!--android:ems="10"-->
+    <!--android:inputType="textPersonName"-->
+    <!--android:text="Home"-->
+    <!--android:textSize="24sp"-->
+    <!--app:layout_constraintStart_toStartOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+</LinearLayout>
