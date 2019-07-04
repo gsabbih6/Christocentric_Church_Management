@@ -23,12 +23,12 @@ public class BranchB {
     @SerializedName("updated_at")
     @Expose
     private String updatedAt;
-    @SerializedName("church")
-    @Expose
-    private Integer church;
-    @SerializedName("payment")
-    @Expose
-    private Integer payment;
+//    @SerializedName("church")
+//    @Expose
+//    private Integer church;
+//    @SerializedName("payment")
+//    @Expose
+//    private Integer payment;
     @SerializedName("user")
     @Expose
     private Integer user;
@@ -81,21 +81,21 @@ public class BranchB {
         this.updatedAt = updatedAt;
     }
 
-    public Integer getChurch() {
-        return church;
-    }
-
-    public void setChurch(Integer church) {
-        this.church = church;
-    }
-
-    public Integer getPayment() {
-        return payment;
-    }
-
-    public void setPayment(Integer payment) {
-        this.payment = payment;
-    }
+//    public Integer getChurch() {
+//        return church;
+//    }
+//
+//    public void setChurch(Integer church) {
+//        this.church = church;
+//    }
+//
+//    public Integer getPayment() {
+//        return payment;
+//    }
+//
+//    public void setPayment(Integer payment) {
+//        this.payment = payment;
+//    }
 
     public Integer getUser() {
         return user;

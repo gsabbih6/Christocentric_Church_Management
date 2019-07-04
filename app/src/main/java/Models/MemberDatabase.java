@@ -1,76 +1,85 @@
 package Models;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.dighisoft.christocentric.AppDatabase;
+import com.reactiveandroid.Model;
+import com.reactiveandroid.annotation.Column;
+import com.reactiveandroid.annotation.PrimaryKey;
+import com.reactiveandroid.annotation.Table;
+import com.reactiveandroid.query.Select;
 
-import Adapter.IAppnterface.CModel;
+import java.util.List;
 
+@Table(name = "MEMBER" ,database = AppDatabase.class)
+public class MemberDatabase extends Model {
 
-public class Member implements CModel {
+    @PrimaryKey
+    private Long id;
+    @Column(name = "firstname")
 
-    @SerializedName("id")
-    @Expose
-    private Integer id;
-    @SerializedName("firstname")
-    @Expose
     private String firstname;
-    @SerializedName("lastname")
-    @Expose
-    private String lastname;
-    @SerializedName("othername")
-    @Expose
-    private String othername;
-    @SerializedName("address")
-    @Expose
-    private String address;
-    @SerializedName("email")
-    @Expose
-    private String email;
-    @SerializedName("special_notes")
-    @Expose
-    private String specialNotes;
-    @SerializedName("status")
-    @Expose
-    private Boolean status;
-    @SerializedName("marital_status")
-    @Expose
-    private String maritalStatus;
-    @SerializedName("occupation")
-    @Expose
-    private String occupation;
-    @SerializedName("school")
-    @Expose
-    private String school;
-    @SerializedName("dob")
-    @Expose
-    private String dob;
-    @SerializedName("dom")
-    @Expose
-    private String dom;
-    @SerializedName("created_at")
-    @Expose
-    private String createdAt;
-    @SerializedName("updated_at")
-    @Expose
-    private String updatedAt;
-    @SerializedName("branch")
-    @Expose
-    private BranchB branch;
-//    @SerializedName("payment")
-//    @Expose
-//    private Payment payment;
-    @SerializedName("telephone")
-    @Expose
-    private String telephone;
-    @SerializedName("photo")
-    @Expose
-    private Photo photo;
+    @Column(name = "lastname")
 
-    public Integer getId() {
+    private String lastname;
+    @Column(name = "othername")
+
+    private String othername;
+    @Column(name = "address")
+
+    private String address;
+    @Column(name = "email")
+
+    private String email;
+    @Column(name = "special_notes")
+
+    private String specialNotes;
+    @Column(name = "status")
+
+    private Boolean status;
+    @Column(name = "marital_status")
+
+    private String maritalStatus;
+    @Column(name = "occupation")
+
+    private String occupation;
+    @Column(name = "school")
+
+    private String school;
+    @Column(name = "dob")
+
+    private String dob;
+    @Column(name = "dom")
+
+    private String dom;
+    @Column(name = "created_at")
+
+    private String createdAt;
+    @Column(name = "updated_at")
+
+    private String updatedAt;
+    @Column(name = "branch")
+
+    private Long branchId;
+    //    @Column(name="payment")
+// 
+//    private Payment payment;
+    @Column(name = "telephone")
+
+    private String telephone;
+    @Column(name = "photo")
+
+    private String photoUrl;
+
+    public static List<MemberDatabase> getByBranchId(Long branchId){
+
+        return Select.from(MemberDatabase.class).where("branch = ?",branchId).fetch();
+
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -186,21 +195,13 @@ public class Member implements CModel {
         this.updatedAt = updatedAt;
     }
 
-    public BranchB getBranch() {
-        return branch;
+    public Long getBranchId() {
+        return branchId;
     }
 
-    public void setBranch(BranchB branch) {
-        this.branch = branch;
+    public void setBranchId(Long branchId) {
+        this.branchId = branchId;
     }
-
-//    public Payment getPayment() {
-//        return payment;
-//    }
-//
-//    public void setPayment(Payment payment) {
-//        this.payment = payment;
-//    }
 
     public String getTelephone() {
         return telephone;
@@ -210,22 +211,11 @@ public class Member implements CModel {
         this.telephone = telephone;
     }
 
-    public Photo getPhoto() {
-        return photo;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
-    public void setPhoto(Photo photo) {
-
-
-        this.photo = photo;
-    }
-
-    public String getName() {
-        return getFirstname()+" "+getLastname();
-    }
-
-    @Override
-    public void destroy() {
-
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }

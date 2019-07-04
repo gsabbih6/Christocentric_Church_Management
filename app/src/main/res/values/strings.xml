@@ -30,5 +30,20 @@
         <item>Monthly</item>
         <item>Yearly</item>
     </string-array>
+
+    <string-array name="marital_status_array">
+        <!--<item>Daily</item>-->
+        <item>Married</item>
+        <item>Single</item>
+        <item>Widowed</item>
+    </string-array>
+
+    <string-array name="member_status_array">
+        <!--<item>Daily</item>-->
+        <item>Member</item>
+        <item>Visitor</item>
+        <!--<item>Widowed</item>-->
+    </string-array>
+
     <string name="title_activity_kingdom_investment">KingdomInvestmentActivity</string>
 </resources>

@@ -22,22 +22,22 @@ public class Church {
     @SerializedName("telephone")
     @Expose
     private String telephone;
-//    @SerializedName("created_at")
-//    @Expose
-//    private String createdAt;
-//    @SerializedName("updated_at")
-//    @Expose
-//    private String updatedAt;
-//    @SerializedName("address")
+    @SerializedName("created_at")
+    @Expose
+    private String createdAt;
+    @SerializedName("updated_at")
+    @Expose
+    private String updatedAt;
+    @SerializedName("address")
     @Expose
     private String address;
-    @SerializedName("user")
-    @Expose
-    private List<UserDTO> user = null;
-    @SerializedName("country")
-    @Expose
-    private Country country;
-    @SerializedName("logo")
+//    @SerializedName("user")
+//    @Expose
+//    private List<UserDTO> user = null;
+//    @SerializedName("country")
+//    @Expose
+//    private Country country;
+//    @SerializedName("logo")
     @Expose
     private Logo logo;
 //    @SerializedName("branches")
@@ -111,21 +111,21 @@ public class Church {
         this.address = address;
     }
 
-    public List<UserDTO> getUser() {
-        return user;
-    }
+//    public List<UserDTO> getUser() {
+//        return user;
+//    }
+//
+//    public void setUser(List<UserDTO> user) {
+//        this.user = user;
+//    }
 
-    public void setUser(List<UserDTO> user) {
-        this.user = user;
-    }
-
-    public Country getCountry() {
-        return country;
-    }
-
-    public void setCountry(Country country) {
-        this.country = country;
-    }
+//    public Country getCountry() {
+//        return country;
+//    }
+//
+//    public void setCountry(Country country) {
+//        this.country = country;
+//    }
 
     public Logo getLogo() {
         return logo;

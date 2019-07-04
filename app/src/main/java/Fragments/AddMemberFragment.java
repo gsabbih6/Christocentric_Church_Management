@@ -7,8 +7,21 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.dighisoft.christocentric.R;
+import com.dighisoft.christocentric.Utils;
+
+import Adapter.GenericSpinnerAdapter;
+import Models.BranchB;
+import Models.BranchDatabase;
+import Models.Member;
+import Models.UserDBModel;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -30,20 +43,18 @@ public class AddMemberFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private EditText firstNameEdittext, middleNameEdittext, surNameEdittext,
+            emailEdittext, schoolEdittext, addressEdittext, telephoneEdittext, occupationEdittext,
+            dobEdittext, specialnotesEdittext;
+    private Spinner branchSpinner, memberStatusSpinner, maritalStatusSpinner;
+    private Button addMemberButton;
 
     public AddMemberFragment() {
+
         // Required empty public constructor
+
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AddMemberFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static AddMemberFragment newInstance(String param1, String param2) {
         AddMemberFragment fragment = new AddMemberFragment();
         Bundle args = new Bundle();
@@ -65,11 +76,110 @@ public class AddMemberFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
+        View v = inflater.inflate(R.layout.fragment_add_member, container, false);
+
+        firstNameEdittext = v.findViewById(R.id.member_firstname);
+        middleNameEdittext = v.findViewById(R.id.member_middlename);
+        surNameEdittext = v.findViewById(R.id.member_lastname);
+        emailEdittext = v.findViewById(R.id.member_email);
+        telephoneEdittext = v.findViewById(R.id.member_tel);
+        addressEdittext = v.findViewById(R.id.member_address);
+        schoolEdittext = v.findViewById(R.id.member_school);
+        occupationEdittext = v.findViewById(R.id.member_occupation);
+        dobEdittext = v.findViewById(R.id.member_dob);
+        memberStatusSpinner = v.findViewById(R.id.member_status);
+        maritalStatusSpinner = v.findViewById(R.id.marital_status);
+        branchSpinner = v.findViewById(R.id.branch);
+        specialnotesEdittext = v.findViewById(R.id.special_notes);
+        addMemberButton = v.findViewById(R.id.add_member_button);
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_member, container, false);
+        setListeners();
+
+        return v;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    private void setListeners() {
+
+        dobEdittext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // show the calender
+
+
+            }
+        });
+        GenericSpinnerAdapter adt = new GenericSpinnerAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, BranchDatabase.getAll());
+        branchSpinner.setAdapter(adt);
+
+        addMemberButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (verifyFields()) {
+                    Member member = new Member();
+                    member.setAddress(addressEdittext.getText().toString());
+
+                    BranchDatabase branchDatabase = (BranchDatabase) branchSpinner.getSelectedItem();
+                    BranchB branchB = new BranchB();
+
+//                    branchB.setAddress(branchDatabase.getAddress());
+                    branchB.setId(Math.toIntExact(branchDatabase.getId()));
+//                    branchB.setName(branchB.getName())
+                    member.setBranch(branchB);
+//                    member.setDob(dateitem);
+                    member.setEmail(emailEdittext.getText().toString());
+                    member.setFirstname(firstNameEdittext.getText().toString());
+                    member.setLastname(surNameEdittext.getText().toString());
+                    member.setMaritalStatus(maritalStatusSpinner.getSelectedItem().toString());
+                    member.setOccupation(occupationEdittext.getText().toString());
+                    member.setOthername(middleNameEdittext.getText().toString());
+                    member.setSchool(schoolEdittext.getText().toString());
+                    member.setTelephone(telephoneEdittext.getText().toString());
+                    member.setSpecialNotes(specialnotesEdittext.getText().toString());
+                    member.setStatus(getMemberStatus(memberStatusSpinner.getSelectedItem().toString()));
+
+
+                    Utils.getMemberRequest().addNewMember(UserDBModel.getUser().get(0).jwt, member).enqueue(new Callback<Member>() {
+                        @Override
+                        public void onResponse(Call<Member> call, Response<Member> response) {
+                            mListener.onAddMemberSuccess(true);
+                            Utils.reset(addressEdittext, emailEdittext, dobEdittext,
+                                    firstNameEdittext, surNameEdittext, middleNameEdittext,
+                                    occupationEdittext, schoolEdittext);
+                        }
+
+                        @Override
+                        public void onFailure(Call<Member> call, Throwable t) {
+                            mListener.onAddMemberSuccess(false);
+                        }
+                    });
+                }
+
+
+                mListener.onAddMemberButtonClicked();
+
+            }
+        });
+    }
+
+    private boolean verifyFields() {
+
+        return Utils.isEmpty(addressEdittext, emailEdittext, dobEdittext,
+                firstNameEdittext, surNameEdittext, middleNameEdittext, occupationEdittext, schoolEdittext);
+    }
+
+    private Boolean getMemberStatus(String toString) {
+        if (toString.equalsIgnoreCase("Member")) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -93,18 +203,11 @@ public class AddMemberFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+
+        void onAddMemberButtonClicked();
+
+        void onAddMemberSuccess(boolean state);
     }
 }

@@ -27,21 +27,21 @@ public class Branch implements CModel {
     @SerializedName("updated_at")
     @Expose
     private String updatedAt;
-//    @SerializedName("church")
-//    @Expose
-//    private Church church;
-    @SerializedName("payments")
+    @SerializedName("church")
     @Expose
-    private List<PaymentB> payments;
+    private Church church;
+//    @SerializedName("payment")
+//    @Expose
+//    private List<Payment> payment;
     @SerializedName("user")
     @Expose
     private List<UserDTO> UserDTO;
     @SerializedName("logo")
     @Expose
     private Logo logo;
-    @SerializedName("members")
-    @Expose
-    private List<Member> members = null;
+//    @SerializedName("members")
+//    @Expose
+//    private List<Member> members = null;
 
     public Integer getId() {
         return id;
@@ -91,22 +91,22 @@ public class Branch implements CModel {
         this.updatedAt = updatedAt;
     }
 //
-//    public Church getChurch() {
-//        return church;
+    public Church getChurch() {
+        return church;
+    }
+
+    public void setChurch(Church church) {
+        this.church = church;
+    }
+//
+//    public  List<Payment> getPayments() {
+//        return payment;
 //    }
 //
-//    public void setChurch(Church church) {
-//        this.church = church;
+//    public void setPayments(List<Payment> payments) {
+//        this.payment = payments;
 //    }
-
-    public  List<PaymentB> getPayments() {
-        return payments;
-    }
-
-    public void setPayments(List<PaymentB> payments) {
-        this.payments = payments;
-    }
-
+//
     public List<UserDTO> getUserDTO() {
         return UserDTO;
     }
@@ -123,13 +123,13 @@ public class Branch implements CModel {
         this.logo = logo;
     }
 //
-    public List<Member> getMembers() {
-        return members;
-    }
-
-    public void setMembers(List<Member> members) {
-        this.members = members;
-    }
+//    public List<Member> getMembers() {
+//        return members;
+//    }
+//
+//    public void setMembers(List<Member> members) {
+//        this.members = members;
+//    }
 
 
     @Override

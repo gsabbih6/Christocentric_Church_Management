@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import Adapter.IAppnterface.CModel;
 
-public class Investment implements CModel {
+public class InvestmentB implements CModel {
 
     @SerializedName("id")
     @Expose
@@ -74,7 +74,7 @@ public class Investment implements CModel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Investment that = (Investment) o;
+        InvestmentB that = (InvestmentB) o;
         return Objects.equals(getId(), that.getId()) &&
                 Objects.equals(getName(), that.getName()) &&
                 Objects.equals(getDescription(), that.getDescription());

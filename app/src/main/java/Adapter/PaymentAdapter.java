@@ -11,58 +11,65 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dighisoft.christocentric.R;
-import com.dighisoft.christocentric.Utils;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.time.OffsetDateTime;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import Models.Investment;
-import Models.Payment;
-import Models.PaymentB;
-import Request.BranchRequest;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import Models.InvestmentDatabase;
+import Models.PaymentDatabase;
 
 import static com.reactiveandroid.ReActiveAndroid.getContext;
 
 public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.MyViewHolder> {
 
-    List<PaymentB> paymentList;
-    final List<Investment> br;
+    List<PaymentDatabase> paymentList;
+    final List<Long> br;
     RecyclerView recyclerView;
     String period;
 
-    public PaymentAdapter(List<PaymentB> paymentList, String period) {
+    public PaymentAdapter(List<PaymentDatabase> paymentList, String period) {
         this.paymentList = paymentList;
         this.period = period;
 
-        Retrofit retrofit = new Retrofit.Builder()
+//        Retrofit retrofit = new Retrofit.Builder()
+//
+//                .baseUrl(Utils.BASE_URL)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//
+//        BranchRequest service = retrofit.create(BranchRequest.class);
 
-                .baseUrl(Utils.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        BranchRequest service = retrofit.create(BranchRequest.class);
-
-        br = getInvestments(paymentList);
+        br = getInvestmentDatabases(paymentList);
     }
 
-    private List<Investment> getInvestments(
-            List<PaymentB> paymentList) {
-        Map<Investment,PaymentB> mp=new HashMap<>();
-        for(PaymentB p:paymentList){
-            mp.put(p.getInvestment(),p);
+    private List<Long> getInvestmentDatabases(
+            List<PaymentDatabase> paymentList) {
+
+
+        Map<Long, Long> mp = new HashMap<>();
+        for (PaymentDatabase p : paymentList) {
+            mp.put(p.getInvestmentid(), p.getInvestmentid());
+        }
+        TreeMap<Long, Long> tm = new TreeMap<>(mp);
+        List<Long> ls = new ArrayList<>();
+
+        for (Long iv : tm.values()) {
+
+            ls.add(iv);
+
         }
 
-        return (List<Investment>) mp.keySet();
+
+        return ls;
     }
 
 
@@ -82,20 +89,22 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.MyViewHo
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
 
-        myViewHolder.categoryName.setText(br.get(i).getName()); // set the branch name
-        buildChart(myViewHolder.chart, br.get(i).getId()); //
+        InvestmentDatabase inv = InvestmentDatabase.getInvestmentById(br.get(i));
+
+        myViewHolder.categoryName.setText(inv.getName()); // set the branch name
+        buildChart(myViewHolder.chart, inv.getId()); //
 
 
     }
 
-    private void buildChart(LineChart chart, int branchID) {
+    private void buildChart(LineChart chart, Long investmentId) {
 
 
-        ArrayList<PaymentB> ls = new ArrayList<>();
+        ArrayList<PaymentDatabase> ls = new ArrayList<>();
 
-        for (PaymentB p : paymentList) {
+        for (PaymentDatabase p : paymentList) {
 
-            if (p.getBranch().getId().equals(branchID)) {
+            if (p.getInvestmentid().equals(investmentId)) {
 
                 ls.add(p);
 
@@ -111,7 +120,7 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.MyViewHo
 
     }
 
-    private List<Entry> getEntry(ArrayList<PaymentB> ls) {
+    private List<Entry> getEntry(ArrayList<PaymentDatabase> ls) {
         final List<Entry> paymentEntries = new ArrayList<>();
         for (Map.Entry<Float, Float> m : cordinatesXY(ls, period).entrySet()) {
 
@@ -121,18 +130,19 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.MyViewHo
         return paymentEntries;
     }
 
-    private Map<Float, Float> cordinatesXY(List<PaymentB> payments, String period) {
+    private Map<Float, Float> cordinatesXY(List<PaymentDatabase> payments, String period) {
 
         Map<Float, Float> hm = new HashMap<>();
 
-        for (PaymentB m : payments) {
+
+        for (PaymentDatabase m : payments) {
             float x = longDateToMonth(m.getCreatedAt(), period);
             Float y = hm.get(x);
 //            Float y = m.getAmount().floatValue();
             if (y == null) {
                 hm.put(x, m.getAmount().floatValue());
             } else {
-                hm.put(x, hm.get(x) + y);
+                hm.put(x, hm.get(x) + m.getAmount().floatValue());
             }
 
             Log.d("Count", String.valueOf(x) + "::" + String.valueOf(hm.get((float) x)));
@@ -146,28 +156,18 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.MyViewHo
     }
 
     private int longDateToMonth(String date, String period) {
-//        Log.d("Date", date);
-//
-//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-////        Date d = new Date(date);
-//        Calendar c = Calendar.getInstance();
-//        try {
-//            c.setTime(df.parse(date));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//
-//        Log.d("Year", String.valueOf(c.get(period)));
-//        return c.get(period);
-//        DateTimeFormatter.ISO_DATE_TIME;
 
         switch (period) {
             case "YEAR":
                 return OffsetDateTime.parse(date).getYear();
+            case "WEEKLY":
+                return OffsetDateTime.parse(date).getDayOfWeek().getValue();
 
-            case "MONTH":
-                return OffsetDateTime.parse(date).getMonthValue();
-            case "DAY":
+            case "MONTHLY":
+                if (OffsetDateTime.parse(date).getYear() == Year.now().getValue()) {
+                    return OffsetDateTime.parse(date).getMonthValue();
+                }
+            case "DAILY":
                 return OffsetDateTime.parse(date).getDayOfYear();
             default:
                 return OffsetDateTime.parse(date).getMonthValue();
@@ -221,6 +221,15 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.MyViewHo
     @Override
     public int getItemCount() {
         return br.size();
+    }
+
+    public void setData(List<PaymentDatabase> payemnts, String period) {
+        paymentList.clear();
+        paymentList.addAll(payemnts);
+        this.period = period;
+        br.clear();
+        br.addAll(getInvestmentDatabases(paymentList));
+        notifyDataSetChanged();
     }
 
 

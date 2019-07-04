@@ -35,9 +35,9 @@ import java.util.List;
 
 import Models.User;
 import Models.UserDBModel;
+import Request.UserRequest;
 import ViewModel.MemberViewModel;
 import ViewModel.UserViewModel;
-import Request.UserRequest;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -107,11 +107,45 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onClick(View view) {
                 attemptLogin();
+//                loginHard();
             }
         });
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+    }
+
+    private void loginHard() {
+        mUserModel = ViewModelProviders.of(this).get(UserViewModel.class);
+
+        mUserModel.getUser("gsabbih", "password").observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(@Nullable User user) {
+                Log.d("JWT0 user", user.getJwt());
+                if (user.getJwt().length() > 1) {
+                    //process to next activity main
+
+                    UserDBModel userDBModel = new UserDBModel();
+                    userDBModel.jwt = "Bearer "+user.getJwt();
+                    userDBModel.userid = Long.valueOf(user.getUser().getId());
+                    userDBModel.church = user.getUser().getChurch();
+//                        userDBModel.username=user.getUser().get
+                    userDBModel.save();
+
+                    Log.d("JWT1 user", String.valueOf(UserDBModel.getUser().get(0).church));
+                    Utils.updateModels("");
+
+                    Utils.startActivty(LoginActivity.this, DashBoardActivity.class);
+                    finish();
+
+
+                } else {
+                    showProgress(false);
+                }
+
+            }
+        });
+
     }
 
     private void populateAutoComplete() {
@@ -222,12 +256,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 public void onChanged(@Nullable User user) {
                     Log.d("JWT0 user", user.getJwt());
                     if (user.getJwt().length() > 1) {
-                            //process to next activity main
+                        //process to next activity main
 
-                        UserDBModel userDBModel=new UserDBModel();
-                        userDBModel.jwt=user.getJwt();
-                        userDBModel.userid=user.getUser().getId();
-                        userDBModel.church=user.getUser().getChurch();
+                        UserDBModel userDBModel = new UserDBModel();
+                        userDBModel.jwt = user.getJwt();
+                        userDBModel.userid = Long.valueOf(user.getUser().getId());
+                        userDBModel.church = user.getUser().getChurch();
 //                        userDBModel.username=user.getUser().get
                         userDBModel.save();
 
@@ -237,9 +271,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         finish();
 
 
-
-
-                    }else{
+                    } else {
                         showProgress(false);
                     }
 

@@ -23,9 +23,9 @@ public class PaymentB {
     @SerializedName("branch")
     @Expose
     private BranchB branch;
-    @SerializedName("member")
-    @Expose
-    private Member member;
+//    @SerializedName("member")
+//    @Expose
+//    private Member member;
 
     public Integer getId() {
         return id;
@@ -75,12 +75,12 @@ public class PaymentB {
         this.branch = branch;
     }
 
-    public Member getMember() {
-        return member;
-    }
-
-    public void setMember(Member member) {
-        this.member = member;
-    }
+//    public Member getMember() {
+//        return member;
+//    }
+//
+//    public void setMember(Member member) {
+//        this.member = member;
+//    }
 
 }

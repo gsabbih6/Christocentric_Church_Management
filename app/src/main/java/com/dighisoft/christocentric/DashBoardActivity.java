@@ -125,7 +125,7 @@ public class DashBoardActivity extends AppCompatActivity
 // open member activty with intent
 
         Intent i = new Intent(this, MemberActivity.class);
-//        i.putExtra("FROM", "new_member");
+//        i.putExtra("default", "");
         startActivity(i);
 
 //        Toast.makeText(this, "Not active yet", Toast.LENGTH_LONG);

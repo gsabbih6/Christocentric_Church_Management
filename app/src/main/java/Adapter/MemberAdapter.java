@@ -3,6 +3,7 @@ package Adapter;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,14 +18,15 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import Models.Member;
+import Models.MemberDatabase;
 
 public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHolder> {
 
-    List<Member> memberList;
+    List<MemberDatabase> memberList;
 
     RecyclerView recyclerView;
 
-    public MemberAdapter(List<Member> memberList, RecyclerView v) {
+    public MemberAdapter(List<MemberDatabase> memberList, RecyclerView v) {
         this.memberList = memberList;
         this.recyclerView = v;
     }
@@ -40,7 +42,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
             public void onClick(View v) {
 
                 int itemPosition = recyclerView.getChildLayoutPosition(v);
-                Member item = memberList.get(itemPosition);
+                MemberDatabase item = memberList.get(itemPosition);
 
                 Intent i = new Intent(parent.getContext(), MemberActivity.class);
                 i.putExtra(MemberActivity.MEMBER_ID,item.getId());
@@ -61,7 +63,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
 
-        myViewHolder.memberName.setText(memberList.get(i).getName());
+        myViewHolder.memberName.setText(memberList.get(i).getFirstname()+ memberList.get(i).getLastname());
         myViewHolder
                 .memberStatus.
                 setText(memberList.
@@ -74,20 +76,27 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
 
         try {
             Picasso.get()
-                    .load(Utils.BASE_URL + memberList.get(i).getPhoto().getUrl())
+                    .load(Utils.BASE_URL + memberList.get(i).getPhotoUrl())
                     .placeholder(R.drawable.member_gradient)
                     .into(myViewHolder.photo);
         } catch (NullPointerException e) {
 
+            Log.d("Photo URLii", memberList.get(i).getPhotoUrl());
         }
 
-//        Log.d("Photo URL", memberList.get(i).getPhoto().getUrl());
+//        Log.d("Photo URL", memberList.get(i).getPhotoUrl());
 
     }
 
     @Override
     public int getItemCount() {
         return memberList.size();
+    }
+
+    public void setItems(List<MemberDatabase> members) {
+        this.memberList.clear();
+        this.memberList.addAll(members);
+        notifyDataSetChanged();
     }
 
 

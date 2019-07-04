@@ -1,6 +1,8 @@
 package Adapter;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -10,6 +12,7 @@ import java.util.List;
 
 import Adapter.IAppnterface.CModel;
 import Models.Branch;
+import Models.BranchDatabase;
 import Models.Investment;
 import Models.Member;
 import androidx.annotation.NonNull;
@@ -24,6 +27,8 @@ public class GenericSpinnerAdapter<T extends CModel> extends ArrayAdapter<T> {
         super(context, resource, objects);
 
         bls = objects;
+
+        Log.e("SIXE OF OB",String.valueOf(bls.size()));
     }
 
     //List<Branch>
@@ -42,8 +47,8 @@ public class GenericSpinnerAdapter<T extends CModel> extends ArrayAdapter<T> {
         TextView tv = (TextView) super.getView(position, convertView, parent);
 
 
-        if (bls.get(position) instanceof Branch) {
-            Branch b = (Branch) bls.get(position);
+        if (bls.get(position) instanceof BranchDatabase) {
+            BranchDatabase b = (BranchDatabase) bls.get(position);
             tv.setText(b.getName());
         }
         if (bls.get(position) instanceof Investment) {
@@ -63,8 +68,8 @@ public class GenericSpinnerAdapter<T extends CModel> extends ArrayAdapter<T> {
         TextView tv = (TextView) super.getView(position, convertView, parent);
 
 
-        if (bls.get(position) instanceof Branch) {
-            Branch b = (Branch) bls.get(position);
+        if (bls.get(position) instanceof BranchDatabase) {
+            BranchDatabase b = (BranchDatabase) bls.get(position);
             tv.setText(b.getName());
         }
         if (bls.get(position) instanceof Investment) {
@@ -78,4 +83,6 @@ public class GenericSpinnerAdapter<T extends CModel> extends ArrayAdapter<T> {
 
         return tv;
     }
+
+
 }

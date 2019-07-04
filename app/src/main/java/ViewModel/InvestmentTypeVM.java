@@ -10,6 +10,7 @@ import java.util.List;
 
 import Models.Church;
 import Models.Investment;
+import Models.UserDBModel;
 import Request.ChurchRequest;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,7 +45,7 @@ public class InvestmentTypeVM extends ViewModel {
     private void loadUser(int churchID) {
 
         // Make retrofit InvestTyp calls
-        service.getInvestments(churchID).enqueue(new Callback<Church>() {
+        service.getInvestments(churchID, UserDBModel.getUser().get(0).jwt).enqueue(new Callback<Church>() {
             @Override
             public void onResponse(Call<Church> call, Response<Church> response) {
                 if(response.isSuccessful()){

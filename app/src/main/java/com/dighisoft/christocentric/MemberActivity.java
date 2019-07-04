@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
-import Fragments.AddKingdomInvestmentFragment;
 import Fragments.AddMemberFragment;
 import Fragments.MemberActivityHomeFragment;
 import Fragments.MemberProfileFragment;
@@ -26,17 +25,16 @@ public class MemberActivity extends FragmentActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-//        memberID = i.getIntExtra(MEMBER_ID, '1'); // ID will be passed to the profile framment
+//      memberID = i.getIntExtra(MEMBER_ID, '1'); // ID will be passed to the profile framment
 
         setContentView(R.layout.member_activity);
         Intent i = getIntent();
 
-        if (i != null) {
+//        if (i != null) {
 
-            if (i.getIntExtra(MEMBER_ID, '1') != 1) {
-                openFragment(MemberProfileFragment.newInstance(i.getIntExtra(MEMBER_ID, '1'), "name"));
-            }
+        if (i.getIntExtra(MEMBER_ID, 1) != 1) {
+            openFragment(MemberProfileFragment.newInstance(i.getIntExtra(MEMBER_ID, '1'), "name"));
+//            }
 
 
         } else {
@@ -49,6 +47,24 @@ public class MemberActivity extends FragmentActivity implements
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onAddMemberButtonClicked() {
+
+    }
+
+    @Override
+    public void onAddMemberSuccess(boolean state) {
+
+        // Show exit or stay on page Dialog
+
+
+    }
+
+    @Override
+    public void onAddNewMemberLister() {
+        openFragment(AddMemberFragment.newInstance("", ""));
     }
 
     @Override
@@ -66,14 +82,14 @@ public class MemberActivity extends FragmentActivity implements
 
     }
 
-    @Override
-    public void onAddKingdomInvestmentButtonClicked(int memberID) {
-
-        //Load Kingdom Investment Fragment
-
-        openFragment(AddKingdomInvestmentFragment.newInstance(memberID));
-
-    }
+//    @Override
+//    public void onAddKingdomInvestmentButtonClicked(int memberID) {
+//
+//        //Load Kingdom Investment Fragment
+//
+//        openFragment(AddKingdomInvestmentFragment.newInstance(memberID));
+//
+//    }
 
     private void openFragment(final Fragment fragment) {
 

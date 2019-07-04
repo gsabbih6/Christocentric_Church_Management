@@ -1,66 +1,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="Fragments.MemberActivityHomeFragment">
+    android:padding="@dimen/activity_horizontal_margin">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:text="Contributions Menu"
-        android:textSize="20sp" />
-
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/fragment_KI_placeholder"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center">
+        android:layout_height="match_parent"
+        android:visibility="visible">
 
-        <Button
-            android:id="@+id/add_new_contrubtions_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:layout_weight="1"
-            android:background="@drawable/button_selector"
-            android:drawableTop="@drawable/male_user"
-            android:text="add new " />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:layout_weight="1"
-            android:background="@drawable/button_selector"
-            android:drawableTop="@drawable/male_user"
-            android:text="Budgeting" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center">
-
-        <Button
-            android:id="@+id/view_contributions_report_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:layout_weight="1"
-            android:background="@drawable/button_selector"
-            android:drawableTop="@drawable/male_user"
-            android:text="Reports" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:layout_weight="1"
-            android:background="@drawable/button_selector"
-            android:drawableTop="@drawable/male_user"
-            android:text="Donations" />
-    </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

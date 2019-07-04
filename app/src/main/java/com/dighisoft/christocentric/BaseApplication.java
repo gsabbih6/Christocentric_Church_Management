@@ -6,6 +6,10 @@ import com.reactiveandroid.ReActiveAndroid;
 import com.reactiveandroid.ReActiveConfig;
 import com.reactiveandroid.internal.database.DatabaseConfig;
 
+import Models.BranchDatabase;
+import Models.InvestmentDatabase;
+import Models.MemberDatabase;
+import Models.PaymentDatabase;
 import Models.UserDBModel;
 
 public class BaseApplication extends Application {
@@ -15,7 +19,8 @@ public class BaseApplication extends Application {
         super.onCreate();
 
         DatabaseConfig appDatabase = new DatabaseConfig.Builder(AppDatabase.class)
-                .addModelClasses(UserDBModel.class)
+                .addModelClasses(InvestmentDatabase.class, BranchDatabase.class,
+                        UserDBModel.class, MemberDatabase.class, PaymentDatabase.class)
                 .build();
 
         ReActiveAndroid.init(new ReActiveConfig.Builder(this)

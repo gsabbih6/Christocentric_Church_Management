@@ -21,11 +21,11 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import com.dighisoft.christocentric.R;
-import com.dighisoft.christocentric.Utils;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.reactiveandroid.query.Select;
 
 import java.time.OffsetDateTime;
 import java.time.Year;
@@ -38,16 +38,12 @@ import java.util.TreeMap;
 import Adapter.GenericSpinnerAdapter;
 import Adapter.MemberAdapter;
 import Models.Branch;
+import Models.BranchDatabase;
 import Models.Member;
+import Models.MemberDatabase;
+import Models.PaymentDatabase;
 import Models.UserDBModel;
-import Models.UserDTO;
-import Request.BranchRequest;
 import ViewModel.MemberViewModel;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DashboardMemberFragment extends Fragment {
 
@@ -61,8 +57,8 @@ public class DashboardMemberFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private String period = "MONTHLY";
     private Spinner branchSpinner;
-    private Spinner periodSpinner;
-    private List<Member> mMember = new ArrayList<>();
+    //    private Spinner periodSpinner;
+    private List<MemberDatabase> mMember = new ArrayList<>();
 
 
     public static DashboardMemberFragment newInstance() {
@@ -79,18 +75,14 @@ public class DashboardMemberFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.member_dashboard_fragment, container, false);
-    }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        branchSpinner = getActivity().findViewById(R.id.member_branch_spinner);
-        periodSpinner = getActivity().findViewById(R.id.member_period_spinner);
+        View v = inflater.inflate(R.layout.member_dashboard_fragment, container, false);
+        branchSpinner = v.findViewById(R.id.member_branch_spinner);
+//        periodSpinner = getActivity().findViewById(R.id.member_period_spinner);
         mViewModel = ViewModelProviders.of(this).get(MemberViewModel.class);
-        recyclerView = getActivity().findViewById(R.id.my_recycler_view);
-        lineChart = getActivity().findViewById(R.id.member_chart);
-        addMemberBt = getActivity().findViewById(R.id.member_more_button);
+        recyclerView = v.findViewById(R.id.my_recycler_view);
+        lineChart = v.findViewById(R.id.member_chart);
+        addMemberBt = v.findViewById(R.id.member_more_button);
 //        mySwipeRefreshLayout=getActivity().findViewById(R.id.m_swipe_refresh);
 
 
@@ -108,20 +100,25 @@ public class DashboardMemberFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         initChart(period);
-
-
+        return v;
     }
 
-    private List<Member> getMembers(Branch b) {
-        return b.getMembers();
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+
     }
 
     private void initChart(final String period) {
         final List<Entry> memberEntries = new ArrayList<>();
-        mViewModel.getMembers().observe(getActivity(), new Observer<List<Member>>() {
-            @Override
-            public void onChanged(@Nullable List<Member> members) {
-                // set observable members to the adapter
+//        mViewModel.getMembers().observe(getActivity(), new Observer<List<Member>>() {
+//            @Override
+//            public void onChanged(@Nullable List<Member> members) {
+//                // set observable members to the adapter
+
+        List<MemberDatabase> members=new ArrayList<>();
+        members.clear();members.addAll(Select.from(MemberDatabase.class).fetch());
                 mMember.clear();
                 mMember.addAll(members);
                 memberAdapter = new MemberAdapter(members, recyclerView);
@@ -132,16 +129,16 @@ public class DashboardMemberFragment extends Fragment {
 
                 }
 
-            }
-        });
+//            }
+//        });
         drawChart(lineChart, memberEntries);
     }
 
-    private void initChart(final String period, final List<Member> members) {
+    private void initChart(final String period, final List<MemberDatabase> members) {
 
         final List<Entry> memberEntries = new ArrayList<>();
-        memberAdapter = new MemberAdapter(members, recyclerView);
-        recyclerView.setAdapter(memberAdapter);
+        memberAdapter.setItems(members);
+//        recyclerView.setAdapter(memberAdapter);
         for (Map.Entry<Float, Float> m : cordinatesXY(members, period).entrySet()) {
 
             memberEntries.add(new Entry(m.getKey(), m.getValue()));
@@ -152,49 +149,21 @@ public class DashboardMemberFragment extends Fragment {
     }
 
     private void setSpinners() {
-        final ArrayList<Branch> br = new ArrayList<>();
-
-        Branch dummy = new Branch();
+        final ArrayList<BranchDatabase> br = new ArrayList<>();
+//
+        BranchDatabase dummy = new BranchDatabase();
         dummy.setName("All");
-        final ArrayList<Branch> ls = new ArrayList<>();
+        final ArrayList<BranchDatabase> ls = new ArrayList<>();
         ls.clear();
         ls.add(dummy);
-        Retrofit retrofit = new Retrofit.Builder()
+        ls.addAll(BranchDatabase.getUserBranches(UserDBModel.getUser().get(0).userid));
 
-                .baseUrl(Utils.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        GenericSpinnerAdapter adt =
+                new GenericSpinnerAdapter(getActivity(),
+                        android.R.layout.simple_spinner_dropdown_item, ls
+                );
 
-        BranchRequest service = retrofit.create(BranchRequest.class);
-
-        service.getBranches().enqueue(new Callback<List<Branch>>() {
-            @Override
-            public void onResponse(Call<List<Branch>> call, Response<List<Branch>> response) {
-                for (Branch bg : response.body()) {
-
-                    for (UserDTO user : bg.getUserDTO()
-                    ) {
-                        if (user.getId().equals(UserDBModel.getUser().get(0).userid)) {
-                            br.add(bg);
-
-                            Log.d("geting branched", bg.getName());
-                        }
-                    }
-                }
-                ls.addAll(br);
-                GenericSpinnerAdapter adt =
-                        new GenericSpinnerAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, ls);
-
-                adt.setNotifyOnChange(true);
-                branchSpinner.setAdapter(adt);
-
-            }
-
-            @Override
-            public void onFailure(Call<List<Branch>> call, Throwable t) {
-                Log.d("Branches failed", t.getCause().getMessage());
-            }
-        });
+        branchSpinner.setAdapter(adt);
 
         branchSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -204,36 +173,30 @@ public class DashboardMemberFragment extends Fragment {
 
                 //Update LIstview and Chart
 
-                if (!b.getName().equals("All")) {
+//                if (!b.getName().equals("All")) {
+//                    mMember.clear();
+//                    mMember.addAll(b.getMembers());
+//                    initChart(period, b.getMembers());
+//
+//
+//                } else {
+//                    initChart(period);
+//                }
+
+                BranchDatabase bb = (BranchDatabase) parent.getItemAtPosition(position);
+
+
+                //Update LIstview and lineChart
+
+                if (!bb.getName().equals("All")) {
                     mMember.clear();
-                    mMember.addAll(b.getMembers());
-                    initChart(period, b.getMembers());
+//                    mPayment.addAll(hm.get(bb.getId()));
 
-
+                    mMember.addAll(MemberDatabase.getByBranchId(bb.getId()));
+                    initChart(period, mMember);
                 } else {
                     initChart(period);
                 }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        periodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String mperiod = (String) parent.getItemAtPosition(position);
-//                initChart(period.toUpperCase());
-
-                period = mperiod;
-
-                if (mMember.size() > 0)
-                    initChart(mperiod.toUpperCase(), mMember);
-
-                Log.d("Spineer Click", period);
-
             }
 
             @Override
@@ -299,11 +262,11 @@ public class DashboardMemberFragment extends Fragment {
         chart.invalidate();
     }
 
-    private Map<Float, Float> cordinatesXY(List<Member> members, String period) {
+    private Map<Float, Float> cordinatesXY(List<MemberDatabase> members, String period) {
 
         Map<Float, Float> hm = new HashMap<>();
 
-        for (Member m : members) {
+        for (MemberDatabase m : members) {
             Float y = hm.get((float) longDateToMonth(m.getCreatedAt(), period));
             int x = longDateToMonth(m.getCreatedAt(), period);
 

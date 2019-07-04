@@ -16,7 +16,7 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/memberfirstname"
+                android:id="@+id/member_firstname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -63,6 +63,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -102,6 +103,38 @@
             android:layout_margin="@dimen/activity_horizontal_margin"
             android:orientation="horizontal">
 
+            <EditText
+                android:id="@+id/member_school"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|center"
+                android:hint="school attended"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/member_occupation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|center"
+                android:hint="occupation"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:orientation="horizontal">
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -116,6 +149,7 @@
                 android:id="@+id/member_status"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:entries="@array/member_status_array"
                 android:gravity="left|center"
                 android:text="Visitor/Member"
                 android:textSize="20sp"
@@ -137,12 +171,13 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <DatePicker
+            <EditText
                 android:id="@+id/member_dob"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:datePickerMode="spinner"
                 android:gravity="left|center"
-                android:text=" 22-Dec-1676"
+                android:hint="Tap to chose date"
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -167,6 +202,7 @@
                 android:id="@+id/marital_status"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:entries="@array/marital_status_array"
                 android:gravity="left|center"
                 android:text="Visitor/Member"
                 android:textSize="20sp"
@@ -209,16 +245,26 @@
 
 
             <EditText
-                android:id="@+id/specialnotes"
+                android:id="@+id/special_notes"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="left|center"
-                android:hint="specail note about the member"
+                android:hint="special note about the member"
                 android:inputType="textShortMessage"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/add_member_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:background="@drawable/button_selector"
+            android:text="Proceed"
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 

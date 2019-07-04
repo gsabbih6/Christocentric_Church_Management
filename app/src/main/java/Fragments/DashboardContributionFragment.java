@@ -1,6 +1,5 @@
 package Fragments;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Color;
@@ -20,36 +19,26 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import com.dighisoft.christocentric.R;
-import com.dighisoft.christocentric.Utils;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.reactiveandroid.query.Select;
 
 import java.time.OffsetDateTime;
+import java.time.Year;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import Adapter.GenericSpinnerAdapter;
-import Adapter.MemberAdapter;
 import Adapter.PaymentAdapter;
-import Models.Branch;
-import Models.Member;
-import Models.PaymentB;
-import Models.PaymentB;
+import Models.BranchDatabase;
+import Models.PaymentDatabase;
 import Models.UserDBModel;
-import Models.UserDTO;
-import Request.BranchRequest;
 import ViewModel.PaymentViewModel;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DashboardContributionFragment extends Fragment {
 
@@ -60,14 +49,15 @@ public class DashboardContributionFragment extends Fragment {
     private Button addMemberBt;
     private OnFragmentInteractionListener mListener;
     private PaymentAdapter paymentAdapter;
-//    private int period = Calendar.DAY_OF_WEEK;
-    private RecyclerView branchrecyclerView;
+    //    private int period = Calendar.DAY_OF_WEEK;
     private RecyclerView categoryrecyclerView;
 
     private String period = "MONTHLY";
     private Spinner branchSpinner;
     private Spinner periodSpinner;
-    private List<PaymentB> mPayment = new ArrayList<>();
+    private List<PaymentDatabase> mPayment = new ArrayList<>();
+    private LineDataSet lineDataSet;
+    private LineData lineData;
 
 
     public static DashboardContributionFragment newInstance() {
@@ -77,34 +67,157 @@ public class DashboardContributionFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_dashboard_contribution, container, false);
+        View v = inflater.inflate(R.layout.fragment_dashboard_contribution, container, false);
+
+        mViewModel = ViewModelProviders.of(this).get(PaymentViewModel.class);
+        branchSpinner = v.findViewById(R.id.contribute_branch_spinner);
+//        periodSpinner = getActivity().findViewById(R.id.contr);
+//        branchrecyclerView = getActivity().findViewById(R.id.payment_branch_recycler_view);
+        categoryrecyclerView = v.findViewById(R.id.category_payment_recycler_view);
+        lineChart = v.findViewById(R.id.general_payment_chart);
+
+//        setUpChartFeatures();
+
+        addMemberBt = v.findViewById(R.id.more_cont_button);
+
+//        setListeners();
+//        setSpinners();
+
+        // TODO: Use the ViewModel
+        categoryrecyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        layoutManager = new LinearLayoutManager(getActivity());
+        categoryrecyclerView.setLayoutManager(layoutManager);
+
+        setUpChartFeatures();
+        initChart(period);
+        setSpinners();
+        setListeners();
+
+
+        return v;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mViewModel = ViewModelProviders.of(this).get(PaymentViewModel.class);
-        branchSpinner = getActivity().findViewById(R.id.member_branch_spinner);
-        periodSpinner = getActivity().findViewById(R.id.member_period_spinner);branchrecyclerView = getActivity().findViewById(R.id.payment_branch_recycler_view);
-        categoryrecyclerView = getActivity().findViewById(R.id.category_payment_recycler_view);
-        lineChart = getActivity().findViewById(R.id.general_payment_chart);
 
-        addMemberBt = getActivity().findViewById(R.id.add_new_member_button);
+    }
 
-        setListeners();
+    private void setUpChartFeatures() {
+
+        lineChart.getXAxis().setDrawAxisLine(false);
+        lineChart.getXAxis().setDrawGridLines(false);
+        lineChart.getXAxis().setDrawLabels(false);
+        lineChart.getXAxis().setDrawGridLinesBehindData(false);
 
 
-        // TODO: Use the ViewModel
-        branchrecyclerView.setHasFixedSize(true);
+        lineChart.getAxisLeft().setDrawAxisLine(false);
+        lineChart.getAxisLeft().setDrawGridLines(false);
+        lineChart.getAxisLeft().setDrawLabels(false);
+        lineChart.getAxisLeft().setDrawGridLinesBehindData(false);
 
-        // use a linear layout manager
-        layoutManager = new LinearLayoutManager(getActivity());
-        branchrecyclerView.setLayoutManager(layoutManager);
-        initChart("MONTH");
+        lineChart.getAxisRight().setEnabled(false);
+        lineChart.getLegend().setEnabled(false);
+        lineChart.getDescription().setEnabled(false);
+
+        lineChart.setTouchEnabled(false);
+    }
+
+    private void initChart(final String period) {
+
+//        mViewModel.getAllPayments(UserDBModel.getUser().get(0).jwt).observe(getActivity(),
+//                new Observer<List<PaymentDatabase>>() {
+//                    @Override
+//                    public void onChanged(@Nullable List<PaymentDatabase> payments) {
+
+        List<PaymentDatabase> payments = PaymentDatabase.getPaymentsByUser();
+
+//        Log.e("TAGGY", String.valueOf(Select.from(PaymentDatabase.class).fetch().size()));
+        mPayment.clear();
+        mPayment.addAll(payments);
+        paymentAdapter = new PaymentAdapter(payments, period);
+        categoryrecyclerView.setAdapter(paymentAdapter);
+        drawChart(getEntry(payments));
+//
+//                    }
+//                });
+//        new doInBc().execute();
 
 
     }
+
+    private void initChart(final String period, final List<PaymentDatabase> payemnts) {
+
+        if (paymentAdapter == null) {
+            paymentAdapter = new PaymentAdapter(payemnts, period);
+            categoryrecyclerView.setAdapter(paymentAdapter);
+        } else {
+            paymentAdapter.setData(payemnts, period);
+        }
+
+        drawChart(getEntry(payemnts));
+
+    }
+
+    private List<Entry> getEntry(final List<PaymentDatabase> payemnts) {
+        List<Entry> entries = new ArrayList<>();
+        for (Map.Entry<Float, Float> m : cordinatesXY(payemnts, period).entrySet()) {
+
+            entries.add(new Entry(m.getKey(), m.getValue()));
+
+        }
+        return entries;
+    }
+
+    private void setSpinners() {
+
+//        new doInBg().execute();
+
+        final ArrayList<BranchDatabase> br = new ArrayList<>();
+//
+        BranchDatabase dummy = new BranchDatabase();
+        dummy.setName("All");
+        final ArrayList<BranchDatabase> ls = new ArrayList<>();
+        ls.clear();
+        ls.add(dummy);
+        ls.addAll(BranchDatabase.getUserBranches(UserDBModel.getUser().get(0).userid));
+
+        GenericSpinnerAdapter adt =
+                new GenericSpinnerAdapter(getActivity(),
+                        android.R.layout.simple_spinner_dropdown_item, ls
+                );
+
+        branchSpinner.setAdapter(adt);
+
+        branchSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                BranchDatabase bb = (BranchDatabase) parent.getItemAtPosition(position);
+
+
+                //Update LIstview and lineChart
+
+                if (!bb.getName().equals("All")) {
+                    mPayment.clear();
+//                    mPayment.addAll(hm.get(bb.getId()));
+
+                    mPayment.addAll(PaymentDatabase.getPaymentsByBranchId(Math.toIntExact(bb.getId())));
+                    initChart(period, mPayment);
+                } else {
+                    initChart(period);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                initChart(period);
+            }
+        });
+    }
+
 
     private void setListeners() {
         addMemberBt.setOnClickListener(new View.OnClickListener() {
@@ -115,198 +228,98 @@ public class DashboardContributionFragment extends Fragment {
         });
     }
 
-    private void setSpinners() {
-        final ArrayList<Branch> br = new ArrayList<>();
-
-        Branch dummy = new Branch();
-        dummy.setName("All");
-        final ArrayList<Branch> ls = new ArrayList<>();
-        ls.clear();
-        ls.add(dummy);
-        Retrofit retrofit = new Retrofit.Builder()
-
-                .baseUrl(Utils.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        BranchRequest service = retrofit.create(BranchRequest.class);
-
-        service.getBranches().enqueue(new Callback<List<Branch>>() {
-            @Override
-            public void onResponse(Call<List<Branch>> call, Response<List<Branch>> response) {
-                for (Branch bg : response.body()) {
-
-                    for (UserDTO user : bg.getUserDTO()
-                    ) {
-                        if (user.getId().equals(UserDBModel.getUser().get(0).userid)) {
-                            br.add(bg);
-
-                            Log.d("geting branched", bg.getName());
-                        }
-                    }
-                }
-                ls.addAll(br);
-                GenericSpinnerAdapter adt =
-                        new GenericSpinnerAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, ls);
-
-                adt.setNotifyOnChange(true);
-                branchSpinner.setAdapter(adt);
-
-            }
-
-            @Override
-            public void onFailure(Call<List<Branch>> call, Throwable t) {
-                Log.d("Branches failed", t.getCause().getMessage());
-            }
-        });
-
-        branchSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Branch b = (Branch) parent.getItemAtPosition(position);
-
-
-                //Update LIstview and Chart
-
-                if (!b.getName().equals("All")) {
-                    mPayment.clear();
-                    mPayment.addAll(b.getPayments());
-                    initChart(period, b.getPayments());
-
-
-                } else {
-                    initChart(period);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        periodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String mperiod = (String) parent.getItemAtPosition(position);
-//                initChart(period.toUpperCase());
-
-                period = mperiod;
-
-                if (mPayment.size() > 0)
-                    initChart(mperiod.toUpperCase(), mPayment);
-
-                Log.d("Spineer Click", period);
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-
-    }
-
-    private void initChart(final String period) {
-
-        final List<Entry> paymentEntries = new ArrayList<>();
-        mViewModel.getAllPayments(UserDBModel.getUser().get(0).jwt).observe(getActivity(), new Observer<List<PaymentB>>() {
-            @Override
-            public void onChanged(@Nullable List<PaymentB> payments) {
-
-                paymentAdapter = new PaymentAdapter(payments, period);
-                branchrecyclerView.setAdapter(paymentAdapter);
-
-
-//                // update the chart
-                for (Map.Entry<Float, Float> m : cordinatesXY(payments, period).entrySet()) {
-
-                    paymentEntries.add(new Entry(m.getKey(), m.getValue()));
-
-                }
-
-//                paymentEntries.add(new Entry(1f, 19f));
-//                paymentEntries.add(new Entry(2f, 2f));
-//                paymentEntries.add(new Entry(3f, 2f));
-//                paymentEntries.add(new Entry(4f, 14f));
-//                paymentEntries.add(new Entry(5f, 14f));
-                drawChart(lineChart, paymentEntries);
-
-            }
-        });
-    }
-    private void initChart(final String period, final List<PaymentB> payemnts) {
-
-        final List<Entry> memberEntries = new ArrayList<>();
-        paymentAdapter = new PaymentAdapter(payemnts,period);
-        recyclerView.setAdapter(paymentAdapter);
-        for (Map.Entry<Float, Float> m : cordinatesXY(mPayment, period).entrySet()) {
-
-            memberEntries.add(new Entry(m.getKey(), m.getValue()));
-
-        }
-        drawChart(lineChart, memberEntries);
-
-    }
-    private void drawChart(LineChart chart, List<Entry> memberEntries) {
-
-        LineDataSet lineDataSet = new LineDataSet(memberEntries, "members");
+    private void refreshChart(List<Entry> memberEntries) {
+        lineChart.clearValues();
+        LineDataSet set = (LineDataSet) lineChart.getData().getDataSetByIndex(0);
+        lineDataSet = new LineDataSet(memberEntries, "members");
         lineDataSet.setDrawFilled(true);
 
         lineDataSet.setColor(Color.GREEN, 100);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            lineDataSet.setFillDrawable(getContext().getDrawable(R.drawable.member_gradient));
+        } else {
+            lineDataSet.setFillColor(Color.GREEN);
+        }
+        set = lineDataSet;
 
-        // set attribute
+        lineData.addDataSet(set);
+        lineChart.notifyDataSetChanged();
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            lineDataSet.setFillColor(Color.argb(112f,100,222,100));
+
+    }
+
+    private void drawChart(List<Entry> memberEntries) {
+        try {
+            if (lineChart.getData().getDataSets() != null) {
+                refreshChart(memberEntries);
+
+                Log.d("Works", "daas");
+
+
+//            lineChart.setData(getLineData(memberEntries));
+//            lineChart.notifyDataSetChanged();
+
+                return;
+
+            }
+        } catch (NullPointerException e) {
+//            refreshChart(memberEntries);
+        }
+//        if (lineChart.getData().getDataSets()!=null) {
+//            refreshChart(memberEntries);
+//
+//            Log.d("Works","daas");
+//
+//
+////            lineChart.setData(getLineData(memberEntries));
+////            lineChart.notifyDataSetChanged();
+//
+//            return;
+//
 //        }
+
+
+        lineChart.setData(getLineData(memberEntries));
+//        lineChart.notifyDataSetChanged();
+        lineChart.invalidate();
+    }
+
+    private LineData getLineData(List<Entry> memberEntries) {
+
+
+//        if (lineDataSet == null) {
+        lineDataSet = new LineDataSet(memberEntries, "members");
+        lineDataSet.setDrawFilled(true);
+
+        lineDataSet.setColor(Color.GREEN, 100);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             lineDataSet.setFillDrawable(getContext().getDrawable(R.drawable.member_gradient));
         } else {
             lineDataSet.setFillColor(Color.GREEN);
         }
 
+//        }
+        if (lineData == null) {
+            lineData = new LineData(lineDataSet);
+            lineData.setDrawValues(true);
+        }
+
+
         //
-        LineData lineData = new LineData(lineDataSet);
-        lineData.setDrawValues(true);
-        chart.getXAxis().setDrawAxisLine(false);
-        chart.getXAxis().setDrawGridLines(false);
-        chart.getXAxis().setDrawLabels(false);
-        chart.getXAxis().setDrawGridLinesBehindData(false);
-
-
-        chart.getAxisLeft().setDrawAxisLine(false);
-        chart.getAxisLeft().setDrawGridLines(false);
-        chart.getAxisLeft().setDrawLabels(false);
-        chart.getAxisLeft().setDrawGridLinesBehindData(false);
-
-        chart.getAxisRight().setEnabled(false);
-
-        chart.getLegend().setEnabled(false);
-        chart.getDescription().setEnabled(false);
-
-        chart.setTouchEnabled(false);
-
-        chart.setData(lineData);
-        chart.invalidate();
+        return lineData;
     }
 
-    private Map<Float, Float> cordinatesXY(List<PaymentB> payments, String period) {
+    private Map<Float, Float> cordinatesXY(List<PaymentDatabase> payments, String period) {
 
         Map<Float, Float> hm = new HashMap<>();
 
-        for (PaymentB m : payments) {
+        for (PaymentDatabase m : payments) {
             float x = longDateToMonth(m.getCreatedAt(), period);
             Float y = hm.get(x);
-//            Float y = m.getAmount().floatValue();
-
-
             if (y == null) {
                 hm.put(x, m.getAmount().floatValue());
             } else {
-                hm.put(x, hm.get(x) + y);
+                hm.put(x, hm.get(x) + m.getAmount().floatValue());
             }
 
             Log.d("Count", String.valueOf(x) + "::" + String.valueOf(hm.get((float) x)));
@@ -320,28 +333,17 @@ public class DashboardContributionFragment extends Fragment {
     }
 
     private int longDateToMonth(String date, String period) {
-//        Log.d("Date", date);
-//
-//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-////        Date d = new Date(date);
-//        Calendar c = Calendar.getInstance();
-//        try {
-//            c.setTime(df.parse(date));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//
-//        Log.d("Year", String.valueOf(c.get(period)));
-//        return c.get(period);
-//        DateTimeFormatter.ISO_DATE_TIME;
-
         switch (period) {
             case "YEAR":
                 return OffsetDateTime.parse(date).getYear();
+            case "WEEKLY":
+                return OffsetDateTime.parse(date).getDayOfWeek().getValue();
 
-            case "MONTH":
-                return OffsetDateTime.parse(date).getMonthValue();
-            case "DAY":
+            case "MONTHLY":
+                if (OffsetDateTime.parse(date).getYear() == Year.now().getValue()) {
+                    return OffsetDateTime.parse(date).getMonthValue();
+                }
+            case "DAILY":
                 return OffsetDateTime.parse(date).getDayOfYear();
             default:
                 return OffsetDateTime.parse(date).getMonthValue();
@@ -366,9 +368,175 @@ public class DashboardContributionFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+    }
+
     public interface OnFragmentInteractionListener {
 
         void onContributionMoreButtonClicked();
 
     }
+
+//    class doInBg extends AsyncTask<Void, Void, List<BranchDatabase>> {
+//
+//        Map<Integer, List<PaymentDatabase>> hm = new HashMap<>();
+//
+//        @Override
+//        protected List<BranchDatabase> doInBackground(Void... voids) {
+//
+//
+//            Log.d("BranchDatabasees failed", "test");
+//            final ArrayList<BranchDatabase> br = new ArrayList<>();
+//
+//            BranchDatabase dummy = new BranchDatabase();
+//            dummy.setName("All");
+//            final ArrayList<BranchDatabase> ls = new ArrayList<>();
+//            ls.clear();
+//            ls.add(dummy);
+////            Retrofit retrofit = new Retrofit.Builder()
+////
+////                    .baseUrl(Utils.BASE_URL)
+////                    .addConverterFactory(GsonConverterFactory.create())
+////                    .build();
+////
+////            BranchDatabaseRequest service = retrofit.create(BranchDatabaseRequest.class);
+//            Log.d("BranchDatabasees failed", "test");
+////            try {
+//            List<BranchDatabase> lst = Utils.getUserBranch();
+//
+////                Map<Integer,PaymentDatabase>hm=new HashMap<>();
+//
+//
+//            for (BranchDatabase b : lst) {
+//
+//                List<PaymentDatabase> pbList = new ArrayList<>();
+//
+//                for (Payment p : b.getPayments()) {
+//                    PaymentDatabase pb = new PaymentDatabase();
+//                    pb.setAmount(p.getAmount());
+//                    pb.setCreatedAt(p.getCreatedAt());
+//                    pb.setId(p.getId());
+//                    pb.setUpdatedAt(p.getUpdatedAt());
+//                    pb.setInvestment(Utils.getInvestment(p.getInvestment()));
+//                    pbList.add(pb);
+//
+//
+//                }
+//                hm.put(Math.toIntExact(b.getId()), pbList);
+//            }
+//            ls.addAll(lst);
+////            } catch (IOException e) {
+////                e.printStackTrace();
+////            }
+////            service.getBranchDatabasees().enqueue(new Callback<List<BranchDatabase>>() {
+////                @Override
+////                public void onResponse(Call<List<BranchDatabase>> call, Response<List<BranchDatabase>> response) {
+////                    for (BranchDatabase bg : response.body()) {
+////
+////                        for (UserDTO user : bg.getUserDTO()
+////                        ) {
+////                            if (user.getId().equals(UserDBModel.getUser().get(0).userid)) {
+////                                br.add(bg);
+////
+//////                            Log.d("geting branched", bg.getPayments().get(0).getUpdatedAt());
+////                            }
+////                        }
+////                    }
+////                    ls.addAll(br);
+////
+////                }
+////
+////                @Override
+////                public void onFailure(Call<List<BranchDatabase>> call, Throwable t) {
+////                    Log.d("BranchDatabasees failed", t.getCause().getMessage());
+////                }
+////            });
+//
+//
+//            return ls;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(List<BranchDatabase> branchList) {
+//            super.onPostExecute(branchList);
+//
+//            GenericSpinnerAdapter adt =
+//                    new GenericSpinnerAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, branchList);
+//
+//            adt.setNotifyOnChange(true);
+//            branchSpinner.setAdapter(adt);
+//
+//            branchSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                @Override
+//                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                    BranchDatabase bb = (BranchDatabase) parent.getItemAtPosition(position);
+//
+//
+//                    //Update LIstview and lineChart
+//
+//                    if (!bb.getName().equals("All")) {
+//                        mPayment.clear();
+//                        mPayment.addAll(hm.get(bb.getId()));
+//                        initChart(period, mPayment);
+//                    } else {
+//                        initChart(period);
+//                    }
+//                }
+//
+//                @Override
+//                public void onNothingSelected(AdapterView<?> parent) {
+//                    initChart(period);
+//                }
+//            });
+//        }
+//    }
+//
+//
+//    class doInBc extends AsyncTask<Void, Void, List<PaymentDatabase>> {
+//
+//        @Override
+//        protected List<PaymentDatabase> doInBackground(Void... voids) {
+//            Gson gson = new GsonBuilder()
+//                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+//
+//                    .create();
+//
+//            Retrofit retrofit = new Retrofit.Builder()
+//
+//                    .baseUrl(Utils.BASE_URL)
+//                    .addConverterFactory(GsonConverterFactory.create(gson))
+//                    .build();
+//            final List<PaymentDatabase> ls = new ArrayList<>();
+//            final PaymentRequest service = retrofit.create(PaymentRequest.class);
+//            for (BranchDatabase b : Utils.getUserBranchDatabase()) {
+//                for (Payment p : b.getPayments()) {
+//                    try {
+//                        for (PaymentDatabase pb : service.getPayments().execute().body()) {
+//                            if (pb.getId().equals(p.getId())) {
+//                                ls.add(pb);
+//                                break;
+//                            }
+//                        }
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//            return ls;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(List<PaymentDatabase> paymentBS) {
+//            super.onPostExecute(paymentBS);
+//
+//            mPayment.clear();
+//            mPayment.addAll(paymentBS);
+//            paymentAdapter = new PaymentAdapter(paymentBS, period);
+//            categoryrecyclerView.setAdapter(paymentAdapter);
+//            drawChart(getEntry(paymentBS));
+//        }
+//    }
 }

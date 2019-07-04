@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -32,7 +33,6 @@ import Models.Investment;
 import Models.Member;
 import Models.Payment;
 import Models.UserDBModel;
-import Models.UserDTO;
 import Request.BranchRequest;
 import Request.PaymentRequest;
 import ViewModel.AddKingdomInvestmentViewModel;
@@ -55,7 +55,7 @@ public class AddKingdomInvestmentFragment extends Fragment {
     private Integer memberId;
     private PaymentRequest service;
 
-    public static AddKingdomInvestmentFragment newInstance(int memberID) {
+    public static AddKingdomInvestmentFragment newInstance() {
         return new AddKingdomInvestmentFragment();
     }
 
@@ -126,15 +126,23 @@ public class AddKingdomInvestmentFragment extends Fragment {
 
                                     // set request
 
-                                    service.addNewPayment(p).enqueue(new Callback<Payment>() {
+                                    service.addNewPayment( UserDBModel.getUser().get(0).jwt,p).enqueue(new Callback<Payment>() {
                                         @Override
                                         public void onResponse(Call<Payment> call, Response<Payment> response) {
                                             if (response.isSuccessful()) {
 
                                                 // Show success dialog
 
-                                                amount.setText("");
-                                                branches.setSelection(0);
+                                                new Handler().post(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        Utils.reset(amount);
+                                                        branches.setSelection(0);
+                                                    }
+                                                });
+
+//                                                amount.setText("");
+
 
                                                 Toast.makeText(getContext(), "Successfully posted payment", Toast.LENGTH_LONG).show();
                                             }
@@ -178,20 +186,20 @@ public class AddKingdomInvestmentFragment extends Fragment {
 
         final List<Branch> br = new ArrayList<>();
 
-        service.getBranches().enqueue(new Callback<List<Branch>>() {
+        service.getBranches( UserDBModel.getUser().get(0).jwt).enqueue(new Callback<List<Branch>>() {
             @Override
             public void onResponse(Call<List<Branch>> call, Response<List<Branch>> response) {
-                Log.d("Branches type", String.valueOf(response.body().get(0).getUserDTO().size()));
-                for (Branch bg : response.body()) {
-
-                    for (UserDTO user : bg.getUserDTO()
-                    ) {
-
-                        if (user.getId().equals(UserDBModel.getUser().get(0).userid)) {
-                            br.add(bg);
-                        }
-                    }
-                }
+//                Log.d("Branches type", String.valueOf(response.body().get(0).getUserDTO().size()));
+//                for (Branch bg : response.body()) {
+//
+//                    for (UserDTO user : bg.getUserDTO()
+//                    ) {
+//
+//                        if (user.getId().equals(UserDBModel.getUser().get(0).userid)) {
+//                            br.add(bg);
+//                        }
+//                    }
+//                }
 
                 GenericSpinnerAdapter branchArrayAdapter = new GenericSpinnerAdapter(getActivity(),
                         android.R.layout.simple_spinner_dropdown_item, br);

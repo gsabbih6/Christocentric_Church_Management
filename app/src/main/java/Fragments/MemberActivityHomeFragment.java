@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.dighisoft.christocentric.R;
 
@@ -29,6 +30,7 @@ public class MemberActivityHomeFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private Button addNewMemberButton;
 
     public MemberActivityHomeFragment() {
         // Required empty public constructor
@@ -65,7 +67,20 @@ public class MemberActivityHomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_member_activity_home, container, false);
+
+        View v = inflater.inflate(R.layout.fragment_member_activity_home, container, false);
+        addNewMemberButton = v.findViewById(R.id.add_new_member_button);
+        setListeners();
+        return v;
+    }
+
+    private void setListeners() {
+        addNewMemberButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onAddNewMemberLister();
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -105,5 +120,7 @@ public class MemberActivityHomeFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+
+        void onAddNewMemberLister();
     }
 }

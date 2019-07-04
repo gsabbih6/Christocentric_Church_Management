@@ -130,18 +130,18 @@ public class MemberProfileFragment extends Fragment {
     }
 
     private void setListeners() {
-        addKI.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onAddKingdomInvestmentButtonClicked(getArguments().getInt(ARG_PARAM1));
-
-
-            }
-        });
+//        addKI.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mListener.onAddKingdomInvestmentButtonClicked(getArguments().getInt(ARG_PARAM1));
+//
+//
+//            }
+//        });
         editProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onAddKingdomInvestmentButtonClicked(getArguments().getInt(ARG_PARAM1));
+//                mListener.onAddKingdomInvestmentButtonClicked(getArguments().getInt(ARG_PARAM1));
 
             }
         });
@@ -150,7 +150,7 @@ public class MemberProfileFragment extends Fragment {
             public void onClick(View v) {
 
                 // verify that the user has that role
-                mListener.onAddKingdomInvestmentButtonClicked(getArguments().getInt(ARG_PARAM1));
+//                mListener.onAddKingdomInvestmentButtonClicked(getArguments().getInt(ARG_PARAM1));
 
             }
         });
@@ -198,6 +198,6 @@ public class MemberProfileFragment extends Fragment {
 
         void onViewDonationButtonCLicked(int memberID);
 
-        void onAddKingdomInvestmentButtonClicked(int memberID);
+//        void onAddKingdomInvestmentButtonClicked(int memberID);
     }
 }
