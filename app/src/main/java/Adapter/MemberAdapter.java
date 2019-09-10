@@ -45,7 +45,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
                 MemberDatabase item = memberList.get(itemPosition);
 
                 Intent i = new Intent(parent.getContext(), MemberActivity.class);
-                i.putExtra(MemberActivity.MEMBER_ID,item.getId());
+                i.putExtra(MemberActivity.MEMBER_ID,item.getId().intValue());
                 parent.getContext().startActivity(i);
 
                 //

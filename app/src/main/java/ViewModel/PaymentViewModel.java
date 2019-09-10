@@ -54,7 +54,9 @@ public class PaymentViewModel extends ViewModel {
 
     public MutableLiveData<List<PaymentB>> getAllPayments(String jwt) {
         final List<PaymentB> ls = new ArrayList<>();
-        service.getPayments(UserDBModel.getUser().get(0).jwt).enqueue(new Callback<List<PaymentB>>() {
+        service.getPayments(
+                UserDBModel.getUser().get(0).jwt
+        ).enqueue(new Callback<List<PaymentB>>() {
             @Override
             public void onResponse(Call<List<PaymentB>> call, Response<List<PaymentB>> response) {
                 if (response.isSuccessful()) {
@@ -88,7 +90,9 @@ public class PaymentViewModel extends ViewModel {
 
         final List<PaymentB> ls = new ArrayList<>();
 
-        service.getPayments( UserDBModel.getUser().get(0).jwt).enqueue(new Callback<List<PaymentB>>() {
+        service.getPayments(
+                UserDBModel.getUser().get(0).jwt
+        ).enqueue(new Callback<List<PaymentB>>() {
             @Override
             public void onResponse(Call<List<PaymentB>> call, Response<List<PaymentB>> response) {
                 if (response.isSuccessful()) {

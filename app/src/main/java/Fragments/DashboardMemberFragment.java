@@ -27,8 +27,12 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.reactiveandroid.query.Select;
 
-import java.time.OffsetDateTime;
-import java.time.Year;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.OffsetDateTime;
+import org.threeten.bp.Year;
+
+//import java.time.OffsetDateTime;
+//import java.time.Year;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -168,7 +172,7 @@ public class DashboardMemberFragment extends Fragment {
         branchSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Branch b = (Branch) parent.getItemAtPosition(position);
+//                Branch b = (Branch) parent.getItemAtPosition(position);
 
 
                 //Update LIstview and Chart

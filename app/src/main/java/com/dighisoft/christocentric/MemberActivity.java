@@ -32,7 +32,7 @@ public class MemberActivity extends FragmentActivity implements
 
 //        if (i != null) {
 
-        if (i.getIntExtra(MEMBER_ID, 1) != 1) {
+        if (i.getIntExtra(MEMBER_ID, -1) != -1) {
             openFragment(MemberProfileFragment.newInstance(i.getIntExtra(MEMBER_ID, '1'), "name"));
 //            }
 

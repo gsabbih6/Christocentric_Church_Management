@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.dighisoft.christocentric.Utils;
 
+import java.io.IOException;
+
 import Models.User;
 import Request.UserRequest;
 import retrofit2.Call;
@@ -47,8 +49,8 @@ public class UserViewModel extends ViewModel {
 
                 if (response.isSuccessful()) {
                     user.setValue(response.body());
-                    Log.d("New user", "login successful");
-                    Log.d("New user", response.body().getJwt());
+//                    Log.d("New user", "login successful");
+//                    Log.d("New user", response.body().getJwt());
                 }
 
             }
@@ -61,5 +63,16 @@ public class UserViewModel extends ViewModel {
 
             }
         });
+//        try {
+//            Response<User> response = service.loginUser(username, password).execute();
+//            if(response.isSuccessful()){
+//                user.setValue(response.body());
+//            }else{
+//
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
     }
 }

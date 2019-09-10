@@ -1,7 +1,6 @@
 package Adapter;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +10,9 @@ import android.widget.TextView;
 import java.util.List;
 
 import Adapter.IAppnterface.CModel;
-import Models.Branch;
 import Models.BranchDatabase;
-import Models.Investment;
-import Models.Member;
+import Models.InvestmentDatabase;
+import Models.MemberDatabase;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -28,7 +26,7 @@ public class GenericSpinnerAdapter<T extends CModel> extends ArrayAdapter<T> {
 
         bls = objects;
 
-        Log.e("SIXE OF OB",String.valueOf(bls.size()));
+        Log.e("SIXE OF OB", String.valueOf(bls.size()));
     }
 
     //List<Branch>
@@ -51,13 +49,13 @@ public class GenericSpinnerAdapter<T extends CModel> extends ArrayAdapter<T> {
             BranchDatabase b = (BranchDatabase) bls.get(position);
             tv.setText(b.getName());
         }
-        if (bls.get(position) instanceof Investment) {
-            Investment in = (Investment) bls.get(position);
+        if (bls.get(position) instanceof InvestmentDatabase) {
+            InvestmentDatabase in = (InvestmentDatabase) bls.get(position);
             tv.setText(in.getName());
         }
-        if (bls.get(position) instanceof Member) {
-            Member m = (Member) bls.get(position);
-            tv.setText(m.getName());
+        if (bls.get(position) instanceof MemberDatabase) {
+            MemberDatabase m = (MemberDatabase) bls.get(position);
+            tv.setText(m.getFirstname() + " " + m.getLastname());
         }
 
         return tv;
@@ -72,13 +70,13 @@ public class GenericSpinnerAdapter<T extends CModel> extends ArrayAdapter<T> {
             BranchDatabase b = (BranchDatabase) bls.get(position);
             tv.setText(b.getName());
         }
-        if (bls.get(position) instanceof Investment) {
-            Investment in = (Investment) bls.get(position);
+        if (bls.get(position) instanceof InvestmentDatabase) {
+            InvestmentDatabase in = (InvestmentDatabase) bls.get(position);
             tv.setText(in.getName());
         }
-        if (bls.get(position) instanceof Member) {
-            Member m = (Member) bls.get(position);
-            tv.setText(m.getName());
+        if (bls.get(position) instanceof MemberDatabase) {
+            MemberDatabase m = (MemberDatabase) bls.get(position);
+            tv.setText(m.getFirstname() + " " + m.getLastname());
         }
 
         return tv;

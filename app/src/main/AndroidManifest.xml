@@ -6,7 +6,9 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <!--<uses-sdk-->
+    <!--android:minSdkVersion="14"-->
+    <!--android:targetSdkVersion="23" />-->
     <application
         android:name=".BaseApplication"
         android:allowBackup="true"
@@ -22,16 +24,9 @@
 
         </activity>
 
-        <!--<meta-data-->
-        <!--android:name="AA_DB_NAME"-->
-        <!--android:value="ChristDB" />-->
-        <!--<meta-data-->
-        <!--android:name="AA_DB_VERSION"-->
-        <!--android:value="1" />-->
-
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -2,9 +2,11 @@ package com.dighisoft.christocentric;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public class Utils {
 
 //        public static String BASE_URL = "http://10.0.2.2:1337";
     public static String BASE_URL = "https://aqueous-everglades-86605.herokuapp.com";
-    public static String LOGIN_TOKEN;
+//    public static String LOGIN_TOKEN;
 
     public static void startActivty(Activity ctx, Class clx) {
 
@@ -130,7 +132,9 @@ public class Utils {
 //        return in[0];
 //    }
         try {
-            return service.getInvestments(UserDBModel.getUser().get(0).jwt,id).execute().body();
+            return service.getInvestments(
+                    UserDBModel.getUser().get(0).jwt,
+                    id).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -149,7 +153,9 @@ public class Utils {
         PaymentRequest service = retrofit.create(PaymentRequest.class);
 
 
-        service.getPayments(UserDBModel.getUser().get(0).jwt).enqueue(new Callback<List<PaymentB>>() {
+        service.getPayments(
+                UserDBModel.getUser().get(0).jwt
+        ).enqueue(new Callback<List<PaymentB>>() {
             @Override
             public void onResponse(Call<List<PaymentB>> call, Response<List<PaymentB>> response) {
 
@@ -185,7 +191,9 @@ public class Utils {
         MemberRequests serviceMember = retrofit.create(MemberRequests.class);
 
 
-        serviceMember.getMembers(UserDBModel.getUser().get(0).jwt).enqueue(new Callback<List<Member>>() {
+        serviceMember.getMembers(
+                UserDBModel.getUser().get(0).jwt
+        ).enqueue(new Callback<List<Member>>() {
             @Override
             public void onResponse(Call<List<Member>> call, Response<List<Member>> response) {
 
@@ -252,7 +260,9 @@ public class Utils {
 
         BranchRequest serviceBranch = retrofit.create(BranchRequest.class);
 
-        serviceBranch.getBranches(UserDBModel.getUser().get(0).jwt).enqueue(new Callback<List<Branch>>() {
+        serviceBranch.getBranches(
+                UserDBModel.getUser().get(0).jwt
+        ).enqueue(new Callback<List<Branch>>() {
             @Override
             public void onResponse(Call<List<Branch>> call, Response<List<Branch>> response) {
 //                ReActiveAndroid.;
@@ -294,7 +304,9 @@ public class Utils {
 
 
         InvesttypeRequest serviceInvest = retrofit.create(InvesttypeRequest.class);
-        serviceInvest.getInvestments(UserDBModel.getUser().get(0).jwt).enqueue(new Callback<List<Investment>>() {
+        serviceInvest.getInvestments(
+                UserDBModel.getUser().get(0).jwt
+        ).enqueue(new Callback<List<Investment>>() {
             @Override
             public void onResponse(Call<List<Investment>> call,
                                    Response<List<Investment>> response) {
@@ -323,7 +335,7 @@ public class Utils {
     }
 
     public static boolean isEmpty(View... vs) {
-
+        boolean status = false;
         for (View v : vs) {
             if (v instanceof EditText) {
                 if (((EditText) v).getText().toString().matches("")) {
@@ -352,5 +364,9 @@ public class Utils {
         for (EditText t : txts) {
             t.setText("");
         }
+    }
+
+    public static void showToast(FragmentActivity activity, String check_your_input) {
+        Toast.makeText(activity,check_your_input,Toast.LENGTH_LONG).show();
     }
 }

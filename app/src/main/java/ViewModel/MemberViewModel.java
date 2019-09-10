@@ -59,7 +59,9 @@ public class MemberViewModel extends ViewModel {
 
         // make retrofit calls hear
 
-        service.getMembers( UserDBModel.getUser().get(0).jwt).enqueue(new Callback<List<Member>>() {
+        service.getMembers(
+                UserDBModel.getUser().get(0).jwt
+        ).enqueue(new Callback<List<Member>>() {
             @Override
             public void onResponse(Call<List<Member>> call, Response<List<Member>> response) {
                 if (response.isSuccessful()) {
@@ -90,7 +92,10 @@ public class MemberViewModel extends ViewModel {
 
     public LiveData<Member> getSelectedMember(int memberID) {
 
-        service.getMember( UserDBModel.getUser().get(0).jwt,memberID).enqueue(new Callback<Member>() {
+        service.getMember(
+                UserDBModel.getUser().get(0).jwt,
+ memberID
+        ).enqueue(new Callback<Member>() {
             @Override
             public void onResponse(Call<Member> call, Response<Member> response) {
                 selected.setValue(response.body());
@@ -123,7 +128,9 @@ public class MemberViewModel extends ViewModel {
                 .build();
 
         BranchRequest serviceb = retrofit.create(BranchRequest.class);
-        serviceb.getBranches(UserDBModel.getUser().get(0).jwt).enqueue(new Callback<List<Branch>>() {
+        serviceb.getBranches(
+                UserDBModel.getUser().get(0).jwt
+        ).enqueue(new Callback<List<Branch>>() {
             @Override
             public void onResponse(Call<List<Branch>> call, Response<List<Branch>> response) {
                 List<Member> list = new ArrayList<>();

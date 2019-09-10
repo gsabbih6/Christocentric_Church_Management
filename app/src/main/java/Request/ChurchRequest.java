@@ -9,5 +9,7 @@ import retrofit2.http.Path;
 public interface ChurchRequest {
 
     @GET("/churches/{id}")
-    Call<Church> getInvestments(@Path("id") int id, @Header("Authorization") String auth);
+    Call<Church> getInvestments(@Path("id") int id
+            , @Header("Authorization") String auth
+    );
 }

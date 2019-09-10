@@ -7,6 +7,8 @@ import com.reactiveandroid.annotation.PrimaryKey;
 import com.reactiveandroid.annotation.Table;
 import com.reactiveandroid.query.Select;
 
+import java.util.List;
+
 @Table(name = "INVESTMENT", database = AppDatabase.class)
 public class InvestmentDatabase extends Model {
 
@@ -27,6 +29,9 @@ public class InvestmentDatabase extends Model {
 
     public static InvestmentDatabase getInvestmentById(Long id) {
         return Select.from(InvestmentDatabase.class).where("id = ?", id).fetchSingle();
+    }
+    public  static List<InvestmentDatabase>getAll(){
+        return Select.from(InvestmentDatabase.class).fetch();
     }
 
     public Long getId() {

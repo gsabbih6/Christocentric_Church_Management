@@ -29,6 +29,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +127,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     //process to next activity main
 
                     UserDBModel userDBModel = new UserDBModel();
-                    userDBModel.jwt = "Bearer "+user.getJwt();
+                    userDBModel.jwt = "Bearer " + user.getJwt();
                     userDBModel.userid = Long.valueOf(user.getUser().getId());
                     userDBModel.church = user.getUser().getChurch();
 //                        userDBModel.username=user.getUser().get
@@ -256,16 +257,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 public void onChanged(@Nullable User user) {
                     Log.d("JWT0 user", user.getJwt());
                     if (user.getJwt().length() > 1) {
+
                         //process to next activity main
 
                         UserDBModel userDBModel = new UserDBModel();
-                        userDBModel.jwt = user.getJwt();
+                        userDBModel.jwt = "Bearer " + user.getJwt();
                         userDBModel.userid = Long.valueOf(user.getUser().getId());
                         userDBModel.church = user.getUser().getChurch();
-//                        userDBModel.username=user.getUser().get
                         userDBModel.save();
 
-                        Log.d("JWT1 user", String.valueOf(UserDBModel.getUser().get(0).church));
+//                        Log.d("JWT1 user", String.valueOf(UserDBModel.getUser().get(0).church));
+//                        Toast.makeText(LoginActivity.this, "Wait while database is refreshed", Toast.LENGTH_LONG).show();
+                        Utils.updateModels("");
 
                         Utils.startActivty(LoginActivity.this, DashBoardActivity.class);
                         finish();

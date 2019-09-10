@@ -1,18 +1,25 @@
 package Fragments;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.dighisoft.christocentric.R;
 import com.dighisoft.christocentric.Utils;
+
+import java.util.Calendar;
 
 import Adapter.GenericSpinnerAdapter;
 import Models.BranchB;
@@ -48,6 +55,7 @@ public class AddMemberFragment extends Fragment {
             dobEdittext, specialnotesEdittext;
     private Spinner branchSpinner, memberStatusSpinner, maritalStatusSpinner;
     private Button addMemberButton;
+    private String dateitem;
 
     public AddMemberFragment() {
 
@@ -107,7 +115,25 @@ public class AddMemberFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // show the calender
+                // Get Current Date
+                final Calendar c = Calendar.getInstance();
+                int mYear = c.get(Calendar.YEAR);
+                int mMonth = c.get(Calendar.MONTH);
+                int mDay = c.get(Calendar.DAY_OF_MONTH);
 
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+
+                                dobEdittext.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+
+                            }
+                        }, mYear, mMonth, mDay);
+                datePickerDialog.show();
 
             }
         });
@@ -118,7 +144,7 @@ public class AddMemberFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if (verifyFields()) {
+                if (!verifyFields()) {
                     Member member = new Member();
                     member.setAddress(addressEdittext.getText().toString());
 
@@ -126,10 +152,14 @@ public class AddMemberFragment extends Fragment {
                     BranchB branchB = new BranchB();
 
 //                    branchB.setAddress(branchDatabase.getAddress());
-                    branchB.setId(Math.toIntExact(branchDatabase.getId()));
-//                    branchB.setName(branchB.getName())
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        branchB.setId(Math.toIntExact(branchDatabase.getId()));
+                    } else {
+                        branchB.setId(branchDatabase.getId().intValue());
+                    }
+                    branchB.setName(branchB.getName());
                     member.setBranch(branchB);
-//                    member.setDob(dateitem);
+                    member.setDob(dobEdittext.getText().toString());
                     member.setEmail(emailEdittext.getText().toString());
                     member.setFirstname(firstNameEdittext.getText().toString());
                     member.setLastname(surNameEdittext.getText().toString());
@@ -142,13 +172,30 @@ public class AddMemberFragment extends Fragment {
                     member.setStatus(getMemberStatus(memberStatusSpinner.getSelectedItem().toString()));
 
 
-                    Utils.getMemberRequest().addNewMember(UserDBModel.getUser().get(0).jwt, member).enqueue(new Callback<Member>() {
+                    Utils.getMemberRequest().addNewMember(
+                            UserDBModel.getUser().get(0).jwt,
+                            member).enqueue(new Callback<Member>() {
                         @Override
                         public void onResponse(Call<Member> call, Response<Member> response) {
                             mListener.onAddMemberSuccess(true);
-                            Utils.reset(addressEdittext, emailEdittext, dobEdittext,
+                            Utils.reset(addressEdittext, emailEdittext, dobEdittext, telephoneEdittext,
                                     firstNameEdittext, surNameEdittext, middleNameEdittext,
                                     occupationEdittext, schoolEdittext);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                            builder.setMessage(" Do want to Add another member ?")
+                                    .setTitle("Add new Kingdom Investment")
+                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            getActivity().finish();
+                                        }
+                                    }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            }).show();
                         }
 
                         @Override
@@ -156,6 +203,8 @@ public class AddMemberFragment extends Fragment {
                             mListener.onAddMemberSuccess(false);
                         }
                     });
+                } else {
+                    Utils.showToast(getActivity(), "Check your input");
                 }
 
 

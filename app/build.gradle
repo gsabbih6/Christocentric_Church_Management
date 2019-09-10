@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.dighisoft.christocentric"
-        minSdkVersion 26
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -40,13 +40,15 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
-    implementation 'com.google.android.gms:play-services-auth:11.8.0'
+//    implementation 'com.google.android.gms:play-services-auth:11.8.0'
     //     implementation 'com.android.support:recyclerview-v7:25.3.1'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
 //    implementation 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
     implementation 'com.reactiveandroid:reactiveandroid:1.4.3'
     implementation 'de.hdodenhof:circleimageview:3.0.0'
-    implementation 'android.arch.navigation:navigation-fragment:1.0.0'
+//    implementation 'android.arch.navigation:navigation-fragment:1.0.0'
 //    implementation 'com.dighisoft.physicsfloatingactionbar.PhysicsFloatingActionBar'
+
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.2.1'
 }

@@ -25,8 +25,11 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.reactiveandroid.query.Select;
 
-import java.time.OffsetDateTime;
-import java.time.Year;
+//import java.time.OffsetDateTime;
+
+import org.threeten.bp.OffsetDateTime;
+import org.threeten.bp.Year;
+//import java.time.Year;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -204,7 +207,12 @@ public class DashboardContributionFragment extends Fragment {
                     mPayment.clear();
 //                    mPayment.addAll(hm.get(bb.getId()));
 
-                    mPayment.addAll(PaymentDatabase.getPaymentsByBranchId(Math.toIntExact(bb.getId())));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        mPayment.addAll(PaymentDatabase.getPaymentsByBranchId(Math.toIntExact(bb.getId())));
+                    }else{
+
+                        mPayment.addAll(PaymentDatabase.getPaymentsByBranchId(bb.getId().intValue()));
+                    }
                     initChart(period, mPayment);
                 } else {
                     initChart(period);

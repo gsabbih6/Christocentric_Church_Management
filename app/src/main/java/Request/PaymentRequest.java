@@ -15,14 +15,22 @@ import retrofit2.http.Path;
 public interface PaymentRequest {
 
     @GET("/payments")
-    Call<List<PaymentB>> getPayments(@Header("Authorization") String auth);
+    Call<List<PaymentB>> getPayments(
+            @Header("Authorization") String auth
+    );
 
     @GET("/payments/{id}")
-    Call<PaymentB> getPayment(@Path("id") int id,@Header("Authorization") String auth);
+    Call<PaymentB> getPayment(@Path("id") int id
+            , @Header("Authorization") String auth
+    );
 
     @PUT("/payments/{id}")
-    Call<Payment> updatePayment(@Header("Authorization") String auth, @Body Payment user, @Path("id") String id);
+    Call<Payment> updatePayment(
+            @Header("Authorization") String auth,
+            @Body Payment user, @Path("id") String id);
 
     @POST("/payments/")
-    Call<Payment> addNewPayment(@Header("Authorization") String auth, @Body Payment user);
+    Call<Payment> addNewPayment(
+            @Header("Authorization") String auth,
+            @Body Payment user);
 }

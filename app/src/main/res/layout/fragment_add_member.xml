@@ -178,6 +178,7 @@
                 android:datePickerMode="spinner"
                 android:gravity="left|center"
                 android:hint="Tap to chose date"
+                android:editable="false"
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>

@@ -12,7 +12,11 @@ import retrofit2.http.Path;
 public interface InvesttypeRequest {
 
     @GET("/investments")
-    Call <List<Investment>> getInvestments(@Header("Authorization") String auth);
+    Call <List<Investment>> getInvestments(
+            @Header("Authorization") String auth
+    );
     @GET("/investments/{id}")
-    Call <Investment> getInvestments(@Header("Authorization") String auth, @Path("id") int id);
+    Call <Investment> getInvestments(
+            @Header("Authorization") String auth,
+            @Path("id") int id);
 }

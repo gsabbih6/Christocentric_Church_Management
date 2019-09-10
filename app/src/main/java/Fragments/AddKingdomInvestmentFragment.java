@@ -3,6 +3,7 @@ package Fragments;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -28,12 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Adapter.GenericSpinnerAdapter;
-import Models.Branch;
+import Models.BranchDatabase;
 import Models.Investment;
+import Models.InvestmentDatabase;
 import Models.Member;
+import Models.MemberDatabase;
 import Models.Payment;
 import Models.UserDBModel;
-import Request.BranchRequest;
 import Request.PaymentRequest;
 import ViewModel.AddKingdomInvestmentViewModel;
 import ViewModel.InvestmentTypeVM;
@@ -126,26 +128,34 @@ public class AddKingdomInvestmentFragment extends Fragment {
 
                                     // set request
 
-                                    service.addNewPayment( UserDBModel.getUser().get(0).jwt,p).enqueue(new Callback<Payment>() {
+                                    service.addNewPayment(
+                                            UserDBModel.getUser().get(0).jwt,
+                                            p).enqueue(new Callback<Payment>() {
                                         @Override
                                         public void onResponse(Call<Payment> call, Response<Payment> response) {
-                                            if (response.isSuccessful()) {
+//                                            if (response.isSuccessful()) {
 
                                                 // Show success dialog
 
-                                                new Handler().post(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        Utils.reset(amount);
-                                                        branches.setSelection(0);
-                                                    }
-                                                });
+                                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-//                                                amount.setText("");
+                                                builder.setMessage(" Do want to Add another kingdom investment ?")
+                                                        .setTitle("Add new Kingdom Investment")
+                                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                getActivity().finish();
+                                                            }
+                                                        }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+
+                                                    }
+                                                }).show();
 
 
                                                 Toast.makeText(getContext(), "Successfully posted payment", Toast.LENGTH_LONG).show();
-                                            }
+//                                            }
 
                                         }
 
@@ -176,52 +186,25 @@ public class AddKingdomInvestmentFragment extends Fragment {
 
     private void setBranches() {
 
-        Retrofit retrofit = new Retrofit.Builder()
-
-                .baseUrl(Utils.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        BranchRequest service = retrofit.create(BranchRequest.class);
-
-        final List<Branch> br = new ArrayList<>();
-
-        service.getBranches( UserDBModel.getUser().get(0).jwt).enqueue(new Callback<List<Branch>>() {
-            @Override
-            public void onResponse(Call<List<Branch>> call, Response<List<Branch>> response) {
-//                Log.d("Branches type", String.valueOf(response.body().get(0).getUserDTO().size()));
-//                for (Branch bg : response.body()) {
-//
-//                    for (UserDTO user : bg.getUserDTO()
-//                    ) {
-//
-//                        if (user.getId().equals(UserDBModel.getUser().get(0).userid)) {
-//                            br.add(bg);
-//                        }
-//                    }
-//                }
-
-                GenericSpinnerAdapter branchArrayAdapter = new GenericSpinnerAdapter(getActivity(),
-                        android.R.layout.simple_spinner_dropdown_item, br);
-                branches.setAdapter(branchArrayAdapter);
-
-            }
-
-            @Override
-            public void onFailure(Call<List<Branch>> call, Throwable t) {
-                Log.d("Branches failed", t.getCause().getMessage());
-            }
-        });
+        GenericSpinnerAdapter branchArrayAdapter = new GenericSpinnerAdapter(getActivity(),
+                android.R.layout.simple_spinner_dropdown_item,
+                BranchDatabase.getUserBranches(UserDBModel.getUser().get(0).userid));
+        branches.setAdapter(branchArrayAdapter);
 
 
         branches.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                Branch b = (Branch) parent.getItemAtPosition(position);
+                BranchDatabase b = (BranchDatabase) parent.getItemAtPosition(position);
 
-                setMembers(b.getId());
-                branchesId = b.getId();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    setMembers(Math.toIntExact(b.getId()));
+                    branchesId = Math.toIntExact(b.getId());
+                } else {
+                    setMembers(b.getId().intValue());
+                    branchesId = b.getId().intValue();
+                }
 
 
             }
@@ -233,7 +216,7 @@ public class AddKingdomInvestmentFragment extends Fragment {
         });
     }
 
-    private void setMembers(int branchID) {
+    private void setMembers(final int branchID) {
 
         MemberViewModel memberViewModel = ViewModelProviders.of(this).get(MemberViewModel.class);
         final List<Member> list = new ArrayList<>();
@@ -250,7 +233,7 @@ public class AddKingdomInvestmentFragment extends Fragment {
                 Log.d("Member count failed", String.valueOf(m.size()));
                 GenericSpinnerAdapter membersArrayAdapter = new GenericSpinnerAdapter(getActivity(),
                         android.R.layout.simple_spinner_dropdown_item,
-                        list);
+                        MemberDatabase.getByBranchId((long) branchID));
                 membersArrayAdapter.setNotifyOnChange(true);
                 members.setAdapter(membersArrayAdapter);
 //                membersArrayAdapter.notifyDataSetChanged();
@@ -262,11 +245,15 @@ public class AddKingdomInvestmentFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                Member m = (Member) parent.getItemAtPosition(position);
+                MemberDatabase m = (MemberDatabase) parent.getItemAtPosition(position);
                 if (m.getFirstname().equals("N/A")) {
                     memberId = -1;
                 } else {
-                    memberId = m.getId();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        memberId = Math.toIntExact(m.getId());
+                    } else {
+                        memberId = m.getId().intValue();
+                    }
                 }
 
 
@@ -294,7 +281,7 @@ public class AddKingdomInvestmentFragment extends Fragment {
 
                 GenericSpinnerAdapter inArrayAdapter = new GenericSpinnerAdapter(getActivity(),
                         android.R.layout.simple_spinner_dropdown_item,
-                        investments);
+                        InvestmentDatabase.getAll());
 
                 investtype.setAdapter(inArrayAdapter);
             }
@@ -302,8 +289,12 @@ public class AddKingdomInvestmentFragment extends Fragment {
         investtype.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Investment b = (Investment) parent.getItemAtPosition(position);
-                investtypId = b.getId();
+                InvestmentDatabase b = (InvestmentDatabase) parent.getItemAtPosition(position);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    investtypId = Math.toIntExact(b.getId());
+                } else {
+                    investtypId = b.getId().intValue();
+                }
             }
 
             @Override
